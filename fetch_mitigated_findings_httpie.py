@@ -187,10 +187,9 @@ def page_math_next(page_json: Dict[str, Any], rid: str, size: int, current_page:
 def post_report(start_d: str, end_d: str, extra: Dict[str, Any]) -> str:
     """Create a findings report for the given time range."""
     body = {
-        "report_type": "FINDINGS",
+        "report_type": "findings",
         "last_updated_start_date": f"{start_d} 00:00:00",
         "last_updated_end_date": f"{end_d} 23:59:59",
-        "status": ["mitigated"],
     }
     body.update(extra or {})
     resp = call_httpie("POST", REPORT_POST_URL, body)
@@ -389,8 +388,9 @@ def write_outputs(all_items: List[Dict[str, Any]], out_dir: Path) -> Tuple[Path,
 
                 ws = writer.sheets[f'findings_{i+1}']
                 for j, col in enumerate(df.columns):
-                    col_max = df[col].astype(str).map(len).max() or 0
-                    max_len = min(80, max(len(str(col)), int(col_max)))
+                    col_max = df[col].astype(str).str.len().max()
+                    col_max = int(col_max) if pd.notna(col_max) else 0
+                    max_len = min(80, max(len(str(col)), col_max))
                     ws.set_column(j, j, max(10, max_len + 2))
     else:
         with pd.ExcelWriter(xlsx_path, engine="xlsxwriter") as writer:

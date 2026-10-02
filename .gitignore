@@ -1,4 +1,5 @@
 out/
+out_httpie/
 .venv/
 venv/
 __pycache__/
@@ -11,3 +12,4 @@ __pycache__/
 *.xlsx
 *.json
 *.jsonl
+report_ids.txt
