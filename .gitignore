@@ -1,0 +1,13 @@
+out/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.DS_Store
+.idea/
+*.log
+*.xlsx
+*.json
+*.jsonl
