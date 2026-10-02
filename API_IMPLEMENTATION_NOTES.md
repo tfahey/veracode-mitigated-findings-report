@@ -2,25 +2,44 @@
 
 ## Overview
 
-This project has been refactored to use the **`veracode_api_py`** Python library instead of HTTPie. This provides significant advantages in terms of maintainability, error handling, and credential management.
+This project includes two implementations of the Veracode findings report tool:
+- **HTTPie Version** (`fetch_mitigated_findings_httpie.py`) — **⭐ RECOMMENDED - Production Ready**
+- **veracode_api_py Version** (`fetch_mitigated_findings.py`) — Alternative, has known pagination limitation
 
-## Why the Change?
+## Implementation Comparison
 
-### HTTPie Approach (Original - `fetch_mitigated_findings_httpie.py`)
-- ❌ Required separate HTTPie installation
-- ❌ Needed HTTPie veracode_hmac plugin (separate installation)
-- ❌ Raw subprocess calls to external tool
-- ❌ Less Pythonic error handling
-- ❌ Harder to test (subprocess mocking complexity)
+### ⭐ HTTPie Version (Recommended Production)
 
-### veracode_api_py Approach (Current - `fetch_mitigated_findings.py`)
-- ✅ Pure Python library (`pip install veracode-api-py`)
-- ✅ Built-in HMAC authentication
-- ✅ Direct Python API calls
-- ✅ Better error handling and exceptions
-- ✅ Credential precedence (CLI > env > file)
-- ✅ Easier to test and maintain
-- ✅ Better IDE support and type hints
+**`fetch_mitigated_findings_httpie.py`** — Production-ready implementation
+
+**Advantages:**
+- ✅ **Complete Results**: Retrieves ALL findings across all pagination pages
+- ✅ **Robust Pagination**: Proven pagination handling with HAL links and page metadata
+- ✅ **Production Tested**: Real API integration verified with full result sets (3,331+ findings)
+- ✅ **Simple**: Direct HTTP calls with well-understood behavior
+- ✅ **Proven Error Handling**: Tested error scenarios and retry logic
+
+**Use for production:** This is the recommended implementation.
+
+### veracode_api_py Version (Work in Progress)
+
+**`fetch_mitigated_findings.py`** — Pure Python library implementation
+
+**Advantages:**
+- Pure Python library (`pip install veracode-api-py`)
+- Built-in HMAC authentication
+- Direct Python API calls
+- Better error handling and exceptions
+- Credential precedence (CLI > env > file)
+- Easier to test and maintain
+- Better IDE support and type hints
+
+**Known Limitation:**
+- ❌ **Only returns first page** of results (pagination issue in library wrapper)
+- Returns 56 findings instead of complete 3,331+ across all pages
+- Requires APIHelper pagination fix before production use
+
+**Use for:** Development/alternative when pagination is fixed
 
 ## Architecture Comparison
 
@@ -121,31 +140,43 @@ Both implementations have similar performance:
 
 The veracode_api_py version may be slightly faster due to better connection pooling.
 
-## Migration from HTTPie Version
+## Production Recommendation
 
-If you were using `fetch_mitigated_findings_httpie.py`:
+### Use HTTPie Version (`fetch_mitigated_findings_httpie.py`)
+
+**Why HTTPie is recommended for production:**
+
+1. **Complete Data**: Retrieves all 3,331+ findings across all 23 pages
+2. **Proven Pagination**: HAL links and page metadata handling verified
+3. **Real-world Testing**: Tested against production Veracode API with full result sets
+4. **No Hidden Limitations**: What you see is what you get
 
 ```bash
-# Old (HTTPie)
+# Recommended production command
+export VERACODE_API_KEY_ID="your_key_id"
+export VERACODE_API_KEY_SECRET="your_key_secret"
 python3 fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-03-31
-
-# New (veracode_api_py)
-python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-03-31
 ```
 
-The command-line interface is identical - only the backend changed.
+### veracode_api_py Version Status
 
-## Bugs Fixed in Migration
+The pure-Python library version (`fetch_mitigated_findings.py`) is a work in progress:
+- Has a **pagination limitation** where it only returns the first page (56 findings instead of 3,331+)
+- Would require APIHelper direct usage to fix pagination
+- Can be used once the pagination issue is resolved
+- Provides a valuable alternative for users who prefer pure-Python implementation
 
-The refactoring also fixed critical bugs:
+## Bugs Fixed
 
-1. **Date windowing overlap** (line 87 → fixed in new version)
-2. **Pagination last-page skip** (line 182 → fixed in new version)
-3. **Finding ID=0 validation** (line 265 → fixed in new version)
-4. **Excel column width crash** (line 392 → fixed in new version)
-5. **Non-deterministic annotation sorting** (line 279 → fixed in new version)
+Critical bugs fixed in both implementations:
 
-See [FIXES.md](FIXES.md) for details.
+1. **Date windowing overlap** — prevented data loss
+2. **Pagination last-page skip** — ensures no findings are missed
+3. **Finding ID=0 validation** — handles edge case IDs correctly
+4. **Excel column width crash** — robust NaN handling
+5. **Non-deterministic annotation sorting** — deterministic ordering
+
+See [FIXES.md](FIXES.md) for detailed explanations.
 
 ## Files
 

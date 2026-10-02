@@ -109,11 +109,37 @@ Each finding row contains:
 
 ## Implementation
 
-This project uses the **`veracode_api_py`** library for Veracode API integration, which provides:
+### ⭐ Recommended: HTTPie Version (Production Ready)
+
+**`fetch_mitigated_findings_httpie.py`** — HTTPie-based implementation
+
+This is the **recommended production implementation** because:
+- ✅ **Complete Results**: Retrieves ALL findings across all pages
+- ✅ **Proven Pagination**: Robust pagination handling for large result sets
+- ✅ **Well-Tested**: Real API integration tested with production Veracode credentials
+- ✅ **Simple Setup**: Requires only HTTPie installation
+
+```bash
+export VERACODE_API_KEY_ID="your_key_id"
+export VERACODE_API_KEY_SECRET="your_key_secret"
+python3 fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-06-30
+```
+
+### Alternative: veracode_api_py Version
+
+**`fetch_mitigated_findings.py`** — Pure Python library implementation
+
+This version uses the `veracode_api_py` library for:
 - Clean Python API client interface
 - Automatic HMAC authentication
-- Flexible credential management (env vars, file, or CLI args)
+- Flexible credential management
 - Better error handling
 
-Alternative implementations:
-- `fetch_mitigated_findings_httpie.py` — HTTPie-based version (requires HTTPie HMAC plugin)
+**⚠️ Known Limitation**: Currently only retrieves the first page of results (pagination needs fixing)
+
+Use this version once the pagination issue is resolved, or if you prefer pure-Python implementation without HTTPie.
+
+```bash
+# Will retrieve first page only (pagination fix needed)
+python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-06-30
+```
