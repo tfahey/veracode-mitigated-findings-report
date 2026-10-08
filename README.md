@@ -57,21 +57,34 @@ python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-03-31 \
 
 ## Usage
 
+### Recommended: HTTPie Version
+
 ```bash
 # Basic usage: fetch mitigated findings from Jan 1 to Jun 30, 2024
-./fetch_mitigated_findings.py --from 2024-01-01 --to 2024-06-30
+./fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-06-30
 
 # Skip annotations (faster if only need findings)
-./fetch_mitigated_findings.py --from 2024-01-01 --to 2024-06-30 --skip-annotations
+./fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-06-30 --skip-annotations
 
 # Custom output directory
-./fetch_mitigated_findings.py --from 2024-01-01 --to 2024-06-30 --out ~/reports
+./fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-06-30 --out ~/reports
 
 # Larger page size (trades memory for fewer API calls)
-./fetch_mitigated_findings.py --from 2024-01-01 --to 2024-06-30 --size 2000
+./fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-06-30 --size 2000
+
+# Longer timeout for large date ranges
+./fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-06-30 --poll-timeout 1200
 ```
 
-### Arguments
+### Alternative: veracode_api_py Version
+
+⚠️ **Note:** Currently only retrieves the first page of results. Use HTTPie version for complete data.
+
+```bash
+./fetch_mitigated_findings.py --from 2024-01-01 --to 2024-06-30 [--api-key-id KEY --api-key-secret SECRET]
+```
+
+### Arguments (Both Versions)
 
 - `--from` (required): Start date in YYYY-MM-DD format
 - `--to` (required): End date in YYYY-MM-DD format
@@ -80,7 +93,11 @@ python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-03-31 \
 - `--skip-annotations`: Skip fetching annotations (faster)
 - `--poll-timeout`: Max seconds to wait for report completion (default: 600)
 - `--poll-interval`: Seconds between status polls (default: 2.0)
-- `--sleep`: Pause before polling report (default: 0.5)
+- `--sleep`: Pause before polling report (default: 0.5) — HTTPie version only
+
+**HTTPie-specific:**
+- `--api-key-id`: Veracode API Key ID (uses env var or credentials file if not provided)
+- `--api-key-secret`: Veracode API Key Secret (uses env var or credentials file if not provided)
 
 ## Output Files
 
