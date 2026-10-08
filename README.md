@@ -32,28 +32,34 @@ pip install -r requirements.txt
 
 ### Credential Setup
 
-Choose one method:
+Choose one method (shown with recommended HTTPie version):
 
 **Option 1: Environment Variables (Recommended for CI/CD)**
 ```bash
 export VERACODE_API_KEY_ID="your_key_id"
 export VERACODE_API_KEY_SECRET="your_key_secret"
-python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-03-31
+python3 fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-03-31
 ```
 
 **Option 2: Credentials File (Recommended for Local Development)**
 ```bash
 # Create ~/.veracode/credentials (first time only)
+[default]
+veracode_api_key_id = your_key_id
+veracode_api_key_secret = your_key_secret
+
 # Then run without environment variables:
-python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-03-31
+python3 fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-03-31
 ```
 
 **Option 3: Command-Line Arguments**
 ```bash
-python3 fetch_mitigated_findings.py --from 2024-01-01 --to 2024-03-31 \
+python3 fetch_mitigated_findings_httpie.py --from 2024-01-01 --to 2024-03-31 \
   --api-key-id your_key_id \
   --api-key-secret your_key_secret
 ```
+
+**Note:** All three methods work with both `fetch_mitigated_findings_httpie.py` (recommended) and `fetch_mitigated_findings.py` (alternative).
 
 ## Usage
 
